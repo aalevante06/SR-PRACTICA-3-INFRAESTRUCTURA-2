@@ -1,4 +1,4 @@
-# 🛡️ Práctica #3 — Infraestructura #2: VPN Remote-Site, Jump Server y RemoteApp con FortiGate
+# 🛡️ Práctica #3 — Infraestructura #2: VPN IPsec, Jump Server y RemoteApp con FortiGate
 
 > **Video de demostración:** [🎥 Ver video](PENDIENTE-URL-DEL-VIDEO)
 
@@ -33,27 +33,27 @@ La práctica demuestra que:
 
 ```mermaid
 flowchart LR
-    NAT["NAT1 / Internet"]
-    VPNC["VPN-CLIENT-2174<br/>21.74.4.2/30<br/>VIP 10.212.135.10/32"]
-    ISP["ISP-2174<br/>Fa1/0 21.74.3.1/30<br/>Fa1/1 21.74.4.1/30"]
-    FG["FG-2174<br/>port1 21.74.3.2/30<br/>VLAN10 10.21.74.1/25<br/>VLAN20 10.21.75.1/29<br/>VLAN30 10.21.75.9/29"]
-    CLOUD["Cloud1 / GUI FortiGate"]
-    SW["SW-INFRA2-2174<br/>802.1Q VLAN 10,20,30<br/>native VLAN 999"]
-    U1["PC-USER1-2174<br/>10.21.74.10/25"]
-    U2["PC-USER2-2174<br/>10.21.74.11/25"]
-    JUMP["JUMP-SERVER-2174<br/>10.21.75.2/29<br/>RDS / RemoteApp / RD Web"]
-    WEB["WEB-SV-2174<br/>10.21.75.10/29<br/>HTTPS + SSH + XRDP"]
+    NAT["NAT1<br/>Salida a Internet"]
+    ISP["ISP-2174<br/>Fa0/0: DHCP<br/>Fa1/0: 21.74.3.1/30<br/>Fa1/1: 21.74.4.1/30"]
+    VPNC["VPN-CLIENT-2174<br/>21.74.4.2/30<br/>VIP: 10.212.135.10/32"]
+    FG["FG-2174<br/>port1: 21.74.3.2/30<br/>port2: trunk 802.1Q<br/>port3: 192.168.79.99/24"]
+    CLOUD["Cloud1<br/>Administración GUI"]
+    SW["SW-INFRA2-2174<br/>Gi0/0: trunk<br/>VLAN 10, 20, 30<br/>Native VLAN 999"]
+    U1["PC-USER1-2174<br/>VLAN10<br/>10.21.74.10/25"]
+    U2["PC-USER2-2174<br/>VLAN10<br/>10.21.74.11/25"]
+    JUMP["JUMP-SERVER-2174<br/>VLAN20<br/>10.21.75.2/29<br/>RDS / RemoteApp / RD Web"]
+    WEB["WEB-SV-2174<br/>VLAN30<br/>10.21.75.10/29<br/>HTTPS / SSH / XRDP"]
 
-    NAT --- ISP
-    VPNC ---|"21.74.4.0/30"| ISP
-    ISP ---|"21.74.3.0/30"| FG
-    CLOUD ---|"port3 / administración"| FG
-    FG ---|"port2 / trunk"| SW
-    SW ---|"VLAN10"| U1
-    SW ---|"VLAN10"| U2
-    SW ---|"VLAN20"| JUMP
-    SW ---|"VLAN30"| WEB
-    VPNC -. "IPsec / acceso solo al Jump" .-> FG
+    NAT ---|"Fa0/0 / DHCP"| ISP
+    VPNC ---|"Fa1/1 / 21.74.4.0/30"| ISP
+    ISP ---|"Fa1/0 / 21.74.3.0/30"| FG
+    CLOUD ---|"port3 / GUI"| FG
+    FG ---|"port2 ↔ Gi0/0 / trunk 802.1Q"| SW
+    SW ---|"Gi0/1 / VLAN10"| U1
+    SW ---|"Gi0/2 / VLAN10"| U2
+    SW ---|"Gi0/3 / VLAN20"| JUMP
+    SW ---|"Gi1/0 / VLAN30"| WEB
+    VPNC -. "VPN IPsec / split tunnel solo a JUMP-SERVER" .-> FG
 ```
 
 ---
@@ -226,8 +226,6 @@ La configuración final fue depurada retirando una ruta estática heredada que y
 
 ![Tabla de rutas final del ISP](evidencias/15-isp-routing-final.png)
 
-> La descripción histórica de `Fa1/1` se conserva en el running-config; en esta topología física ese enlace corresponde al segmento del `VPN-CLIENT-2174` (`21.74.4.2/30`).
-
 ---
 
 ## 6. Validación funcional
@@ -349,7 +347,6 @@ SR-PRACTICA-3-INFRAESTRUCTURA-2/
 - [x] ISP con PAT hacia NAT1
 - [x] Running-configs finales guardados
 - [x] Evidencias depuradas
-- [ ] URL del video pendiente de insertar
 
 ---
 
