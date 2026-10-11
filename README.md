@@ -1,6 +1,6 @@
 # 🛡️ Práctica #3 — Infraestructura #2: VPN IPsec, Jump Server y RemoteApp con FortiGate
 
-> **Video de demostración:** [🎥 Ver video](PENDIENTE-URL-DEL-VIDEO)
+> **Video de demostración:** [🎥 Ver video](https://youtu.be/-BmUhfW7bdo)
 
 **Asignatura:** Seguridad de Redes  
 **Estudiante:** Luis Ariel Alevante Agramonte  
