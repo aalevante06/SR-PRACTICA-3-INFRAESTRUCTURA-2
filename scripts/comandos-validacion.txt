@@ -1,0 +1,58 @@
+PRÁCTICA #3 - INFRAESTRUCTURA #2
+Comandos de validación usados durante la práctica
+
+=== VPN-CLIENT-2174 ===
+sudo ipsec up VPN-REMOTE-2174
+ping -c 3 10.21.75.2
+nc -zv 10.21.75.2 443
+nc -zv 10.21.75.10 443
+
+Resultado esperado:
+- VPN establecida y VIP 10.212.135.10/32.
+- JUMP-SERVER 10.21.75.2 accesible.
+- WEB-SV 10.21.75.10 NO accesible directamente desde VPN.
+
+=== PC-USER1-2174 / USER-SIN-PRIV ===
+ip -br addr show ens3
+nc -zv 10.21.75.2 443
+nc -zv 10.21.75.2 22
+nc -zv 10.21.75.2 3389
+
+Resultado esperado:
+- IP 10.21.74.10/25.
+- HTTPS 443 permitido hacia Jump.
+- SSH 22 y RDP 3389 no disponibles directamente.
+
+=== PC-USER2-2174 / USER-PRIV ===
+ip -br addr show ens3
+nc -zv 10.21.75.2 443
+nc -zv 10.21.75.2 22
+nc -zv 10.21.75.2 3389
+
+Resultado esperado:
+- IP 10.21.74.11/25.
+- HTTPS 443 y RDP 3389 permitidos hacia Jump.
+- SSH directo no disponible; PuTTY se publica como RemoteApp en el Jump.
+
+=== JUMP-SERVER-2174 ===
+Test-NetConnection 10.21.75.10 -Port 22
+Test-NetConnection 10.21.75.10 -Port 443
+Test-NetConnection 10.21.75.10 -Port 3389
+Test-NetConnection 10.21.75.10 -Port 80
+
+Resultado esperado:
+- 22 / 443 / 3389: permitidos.
+- 80: bloqueado.
+
+=== SW-INFRA2-2174 ===
+show vlan brief
+show interfaces trunk
+show interfaces status
+show running-config
+
+=== ISP-2174 ===
+show ip interface brief
+show ip route
+show ip nat statistics
+show running-config | include ip nat|access-list
+show running-config

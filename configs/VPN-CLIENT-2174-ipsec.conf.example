@@ -1,0 +1,24 @@
+# VPN-CLIENT-2174 — plantilla pública/sanitizada
+# strongSwan / IKEv1 XAUTH PSK
+# Las credenciales reales NO se incluyen.
+
+config setup
+    uniqueids=no
+
+conn VPN-REMOTE-2174
+    keyexchange=ikev1
+    aggressive=yes
+    ike=des-md5-modp1536,des-sha1-modp1536
+    esp=des-md5-modp1536,des-sha1-modp1536
+    left=21.74.4.2
+    leftsourceip=%config
+    leftauth=psk
+    leftauth2=xauth
+    xauth_identity=vpn2174
+    right=21.74.3.2
+    rightauth=psk
+    modeconfig=pull
+    auto=add
+
+# El FortiGate entrega por Mode Config el pool 10.212.135.10-20
+# y el split tunnel únicamente hacia JUMP-SERVER (10.21.75.2/32).
